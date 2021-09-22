@@ -1,0 +1,9 @@
+export CONFIG_QNAS_VERSION = 1.0.0
+export CONFIG_TARGET = aarch64-linux-musl
+export CONFIG_LINUX_ARCH = arm64
+export CONFIG_GCC_ABI = lp64
+export CONFIG_GCC_CPU = cortex-a72
+export CONFIG_STRIP_AND_DELETE_DOCS = 1
+export CONFIG_HOSTNAME = qnas
+export CONFIG_ROOT_PASSWD = qnas
+export CONFIG_LOCAL_TIMEZONE=Asia/Seoul
