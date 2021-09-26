@@ -84,7 +84,7 @@ total_build_time=$(timer)
 rm -rf $BUILD_DIR $ROOTFS_DIR
 mkdir -pv $BUILD_DIR $ROOTFS_DIR
 
-step "[1/22] Create root file system directory."
+step "[1/23] Create root file system directory."
 rm -rf $ROOTFS_DIR
 mkdir -pv $ROOTFS_DIR/{boot,bin,dev,etc,lib,media,mnt,opt,proc,root,run,sbin,sys,tmp,usr}
 ln -snvf lib $ROOTFS_DIR/lib64
@@ -95,7 +95,7 @@ mkdir -pv $ROOTFS_DIR/usr/{bin,lib,sbin}
 ln -snvf lib $ROOTFS_DIR/usr/lib64
 mkdir -pv $ROOTFS_DIR/var/lib
 
-step "[2/22] Creating Essential Files and Symlinks"
+step "[2/23] Creating Essential Files and Symlinks"
 # Create /etc/passwd
 cat >$ROOTFS_DIR/etc/passwd <<"EOF"
 root:x:0:0:root:/root:/bin/sh
@@ -163,11 +163,11 @@ ln -svf /tmp $ROOTFS_DIR/var/tmp
 ln -svf /tmp/log $ROOTFS_DIR/dev/log
 ln -svf /tmp/resolv.conf $ROOTFS_DIR/etc/resolv.conf
 
-step "[3/22] Copy GCC 11.2.0 Library"
+step "[3/23] Copy GCC 11.2.0 Library"
 cp -v $TOOLS_DIR/$CONFIG_TARGET/lib64/libgcc_s* $ROOTFS_DIR/lib/
 cp -v $TOOLS_DIR/$CONFIG_TARGET/lib64/libatomic* $ROOTFS_DIR/lib/
 
-step "[4/22] Libstdc++ from Gcc 11.2.0"
+step "[4/23] Libstdc++ from Gcc 11.2.0"
 for libstdc in libstdc++; do
 	cp -dpvf $TOOLS_DIR/$CONFIG_TARGET/lib*/$libstdc.a $ROOTFS_DIR/usr/lib/
 done
@@ -175,7 +175,7 @@ for libstdc in libstdc++; do
 	cp -dpvf $TOOLS_DIR/$CONFIG_TARGET/lib*/$libstdc.so* $ROOTFS_DIR/usr/lib/
 done
 
-step "[5/22] musl 1.2.2"
+step "[5/23] musl 1.2.2"
 extract $SOURCES_DIR/musl-1.2.2.tar.gz $BUILD_DIR
 sed -i 's@/dev/null/utmp@/var/log/utmp@g' $BUILD_DIR/musl-1.2.2/include/paths.h
 sed -i 's@/dev/null/wtmp@/var/log/wtmp@g' $BUILD_DIR/musl-1.2.2/include/paths.h
@@ -191,7 +191,7 @@ make -j$PARALLEL_JOBS DESTDIR=$ROOTFS_DIR install -C $BUILD_DIR/musl-1.2.2/musl-
 install -m 0644 -D $SUPPORT_DIR/musl/queue.h $ROOTFS_DIR/include/sys/queue.h
 rm -rf $BUILD_DIR/musl-1.2.2
 
-step "[6/22] Busybox 1.34.0"
+step "[6/23] Busybox 1.34.0"
 extract $SOURCES_DIR/busybox-1.34.0.tar.bz2 $BUILD_DIR
 make -j$PARALLEL_JOBS distclean -C $BUILD_DIR/busybox-1.34.0
 make -j$PARALLEL_JOBS ARCH=$CONFIG_LINUX_ARCH defconfig -C $BUILD_DIR/busybox-1.34.0
@@ -314,7 +314,7 @@ fi
 cp -v $BUILD_DIR/busybox-1.34.0/examples/depmod.pl $TOOLS_DIR/bin/depmod.pl
 rm -rf $BUILD_DIR/busybox-1.34.0
 
-step "[7/22] Install Bootscript"
+step "[7/23] Install Bootscript"
 mkdir -pv $ROOTFS_DIR/etc/init.d
 cat >$ROOTFS_DIR/etc/inittab <<"EOF"
 # /etc/inittab
@@ -455,7 +455,7 @@ esac
 EOF
 chmod -v 0755 $ROOTFS_DIR/etc/init.d/{rcK,rcS,S20urandom}
 
-step "[8/22] General Network Configuration"
+step "[8/23] General Network Configuration"
 cat >$ROOTFS_DIR/etc/network/interfaces <<"EOF"
 auto lo
 iface lo inet loopback
@@ -869,7 +869,7 @@ fido            60179/udp			# Ifmail
 # Local services
 EOF
 
-step "[9/22] The Bash Shell Startup Files"
+step "[9/23] The Bash Shell Startup Files"
 cat >$ROOTFS_DIR/etc/profile <<"EOF"
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 if [ "$PS1" ]; then
@@ -891,7 +891,7 @@ unset i
 EOF
 echo "umask 022" >$ROOTFS_DIR/etc/profile.d/umask.sh
 
-step "[10/22] Creating the /etc/fstab File"
+step "[10/23] Creating the /etc/fstab File"
 cat >$ROOTFS_DIR/etc/fstab <<"EOF"
 # <file system>	<mount pt>	<type>	<options>	<dump>	<pass>
 /dev/root	/		ext2	rw,noauto	0	1
@@ -903,7 +903,7 @@ tmpfs		/run		tmpfs	mode=0755,nosuid,nodev	0	0
 sysfs		/sys		sysfs	defaults	0	0
 EOF
 
-step "[11/22] Setting Local Timezone"
+step "[11/23] Setting Local Timezone"
 mkdir $BUILD_DIR/tzdata2021a
 extract $SOURCES_DIR/tzdata2021a.tar.gz $BUILD_DIR/tzdata2021a
 ZONEINFO=$ROOTFS_DIR/usr/share/zoneinfo
@@ -919,7 +919,7 @@ ln -sfv /usr/share/zoneinfo/$CONFIG_LOCAL_TIMEZONE $ROOTFS_DIR/etc/localtime
 echo "$CONFIG_LOCAL_TIMEZONE" >$ROOTFS_DIR//etc/timezone
 rm -rf $BUILD_DIR/tzdata2021a
 
-step "[12/22] Zlib 1.2.11"
+step "[12/23] Zlib 1.2.11"
 extract $SOURCES_DIR/zlib-1.2.11.tar.xz $BUILD_DIR
 (cd $BUILD_DIR/zlib-1.2.11 && CC=$TOOLS_DIR/usr/bin/$CONFIG_TARGET-gcc ./configure --shared --prefix=/usr)
 make -j1 -C $BUILD_DIR/zlib-1.2.11
@@ -927,7 +927,7 @@ make -j1 DESTDIR=$SYSROOT_DIR install -C $BUILD_DIR/zlib-1.2.11
 make -j1 DESTDIR=$ROOTFS_DIR install -C $BUILD_DIR/zlib-1.2.11
 rm -rf $BUILD_DIR/zlib-1.2.11
 
-step "[13/22] OpenSSL 1.1.1d"
+step "[13/23] OpenSSL 1.1.1d"
 extract $SOURCES_DIR/openssl-1.1.1d.tar.gz $BUILD_DIR
 (cd $BUILD_DIR/openssl-1.1.1d &&
 	./Configure \
@@ -943,7 +943,7 @@ make -j1 DESTDIR=$SYSROOT_DIR install -C $BUILD_DIR/openssl-1.1.1d
 make -j1 DESTDIR=$ROOTFS_DIR install -C $BUILD_DIR/openssl-1.1.1d
 rm -rf $BUILD_DIR/openssl-1.1.1d
 
-step "[14/22] Curl 7.79.0"
+step "[14/23] Curl 7.79.0"
 extract $SOURCES_DIR/curl-7.79.0.tar.xz $BUILD_DIR
 (cd $BUILD_DIR/curl-7.79.0 &&
 	./configure \
@@ -960,7 +960,7 @@ make -j$PARALLEL_JOBS DESTDIR=$SYSROOT_DIR install -C $BUILD_DIR/curl-7.79.0
 make -j$PARALLEL_JOBS DESTDIR=$ROOTFS_DIR install -C $BUILD_DIR/curl-7.79.0
 rm -rf $BUILD_DIR/curl-7.79.0
 
-step "[15/22] OpenSSH 8.7p1"
+step "[15/23] OpenSSH 8.7p1"
 extract $SOURCES_DIR/openssh-8.7p1.tar.gz $BUILD_DIR
 (cd $BUILD_DIR/openssh-8.7p1 &&
 	./configure \
@@ -991,7 +991,7 @@ echo "ListenAddress 0.0.0.0" >>$ROOTFS_DIR/etc/ssh/sshd_config
 install -m 754 $SUPPORT_DIR/openssh/sshd $ROOTFS_DIR/etc/init.d/S50sshd
 rm -rf $BUILD_DIR/openssh-8.7p1
 
-step "[16/22] Which 2.21"
+step "[16/23] Which 2.21"
 extract $SOURCES_DIR/which-2.21.tar.gz $BUILD_DIR
 (cd $BUILD_DIR/which-2.21 &&
 	./configure \
@@ -1004,7 +1004,7 @@ make -j$PARALLEL_JOBS DESTDIR=$SYSROOT_DIR install -C $BUILD_DIR/which-2.21
 make -j$PARALLEL_JOBS DESTDIR=$ROOTFS_DIR install -C $BUILD_DIR/which-2.21
 rm -rf $BUILD_DIR/which-2.21
 
-step "[17/22] libuv 1.42.0"
+step "[17/23] libuv 1.42.0"
 extract $SOURCES_DIR/libuv-v1.42.0.tar.gz $BUILD_DIR
 (cd $BUILD_DIR/libuv-v1.42.0 && sh autogen.sh)
 (cd $BUILD_DIR/libuv-v1.42.0 &&
@@ -1019,7 +1019,7 @@ make -j$PARALLEL_JOBS DESTDIR=$SYSROOT_DIR install -C $BUILD_DIR/libuv-v1.42.0
 make -j$PARALLEL_JOBS DESTDIR=$ROOTFS_DIR install -C $BUILD_DIR/libuv-v1.42.0
 rm -rf $BUILD_DIR/libuv-v1.42.0
 
-step "[18/22] nghttp2 1.44.0"
+step "[18/23] nghttp2 1.44.0"
 extract $SOURCES_DIR/nghttp2-1.44.0.tar.xz $BUILD_DIR
 (cd $BUILD_DIR/nghttp2-1.44.0 &&
 	./configure \
@@ -1035,7 +1035,7 @@ make -j$PARALLEL_JOBS DESTDIR=$SYSROOT_DIR install -C $BUILD_DIR/nghttp2-1.44.0
 make -j$PARALLEL_JOBS DESTDIR=$ROOTFS_DIR install -C $BUILD_DIR/nghttp2-1.44.0
 rm -rf $BUILD_DIR/nghttp2-1.44.0
 
-step "[19/22] Node.js 14.17.6"
+step "[19/23] Node.js 14.17.6"
 extract $SOURCES_DIR/node-v14.17.6.tar.xz $BUILD_DIR
 sed -i 's|ares_nameser.h|arpa/nameser.h|' $BUILD_DIR/node-v14.17.6/src/cares_wrap.h
 (cd $BUILD_DIR/node-v14.17.6 &&
@@ -1062,7 +1062,7 @@ make -j$PARALLEL_JOBS -C $BUILD_DIR/node-v14.17.6
 make -j$PARALLEL_JOBS DESTDIR=$ROOTFS_DIR install -C $BUILD_DIR/node-v14.17.6
 rm -rf $BUILD_DIR/node-v14.17.6
 
-step "[20/22] Nginx 1.21.3"
+step "[20/23] Nginx 1.21.3"
 extract $SOURCES_DIR/nginx-1.21.3.tar.gz $BUILD_DIR
 (cd $BUILD_DIR/nginx-1.21.3 &&
 	ngx_force_c99_have_variadic_macros=yes \
@@ -1104,7 +1104,7 @@ sed -i 's/listen       80;/listen       8080;/g' $ROOTFS_DIR/etc/nginx/nginx.con
 install -m 755 $SUPPORT_DIR/nginx/nginx $ROOTFS_DIR/etc/init.d/S50nginx
 rm -rf $BUILD_DIR/nginx-1.21.3
 
-step "[21/22] Ncurses 6.2"
+step "[21/23] Ncurses 6.2"
 extract $SOURCES_DIR/ncurses-6.2.tar.gz $BUILD_DIR
 (cd $BUILD_DIR/ncurses-6.2 &&
 	./configure \
@@ -1135,7 +1135,7 @@ make -j$PARALLEL_JOBS DESTDIR=$SYSROOT_DIR install -C $BUILD_DIR/ncurses-6.2
 make -j$PARALLEL_JOBS DESTDIR=$ROOTFS_DIR install -C $BUILD_DIR/ncurses-6.2
 rm -rf $BUILD_DIR/ncurses-6.2
 
-step "[22/22] MariaDB 10.6.4"
+step "[22/23] MariaDB 10.6.4"
 extract $SOURCES_DIR/mariadb-10.6.4.tar.gz $BUILD_DIR
 mkdir $BUILD_DIR/mariadb-10.6.4/build
 (
@@ -1177,5 +1177,9 @@ install -m 755 $SUPPORT_DIR/mariadb/mysqld $ROOTFS_DIR/etc/init.d/S97mysqld
 mkdir -pv $ROOTFS_DIR/srv/mysql
 echo 'mysql:x:40:40:MySQL Server:/srv/mysql:/bin/false' >>$ROOTFS_DIR/etc/passwd
 rm -rf $BUILD_DIR/mariadb-10.6.4
+
+step "[23/23] Minio"
+install -m 755 $SOURCES_DIR/minio $ROOTFS_DIR/bin/minio
+install -m 755 $SUPPORT_DIR/minio/minio $ROOTFS_DIR/etc/init.d/S50minio
 
 success "\nTotal root file system build time: $(timer $total_build_time)\n"

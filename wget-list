@@ -5,6 +5,7 @@ https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.13.13.tar.xz
 https://cmake.org/files/v3.21/cmake-3.21.3.tar.gz
 https://curl.se/download/curl-7.79.0.tar.xz
 https://dist.libuv.org/dist/v1.42.0/libuv-v1.42.0.tar.gz
+https://dl.min.io/server/minio/release/linux-amd64/minio
 https://downloads.mariadb.org/interstitial/mariadb-10.6.4/source/mariadb-10.6.4.tar.gz
 https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.xz
 https://ftp.gnu.org/gnu/automake/automake-1.16.4.tar.xz
