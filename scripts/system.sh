@@ -1178,8 +1178,9 @@ mkdir -pv $ROOTFS_DIR/srv/mysql
 echo 'mysql:x:40:40:MySQL Server:/srv/mysql:/bin/false' >>$ROOTFS_DIR/etc/passwd
 rm -rf $BUILD_DIR/mariadb-10.6.4
 
-step "[23/23] Minio"
-install -m 755 $SOURCES_DIR/minio $ROOTFS_DIR/bin/minio
+step "[23/23] Minio 2021-09-24T00-24-24Z"
+extract $SOURCES_DIR/minio-2021-09-24T00-24-24Z.tar.xz $ROOTFS_DIR/bin
+chmod 755 $ROOTFS_DIR/bin/minio
 install -m 755 $SUPPORT_DIR/minio/minio $ROOTFS_DIR/etc/init.d/S50minio
 
 success "\nTotal root file system build time: $(timer $total_build_time)\n"
